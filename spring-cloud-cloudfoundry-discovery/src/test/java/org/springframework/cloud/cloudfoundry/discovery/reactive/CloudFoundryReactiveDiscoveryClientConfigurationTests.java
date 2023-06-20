@@ -39,8 +39,8 @@ import static org.mockito.Mockito.mock;
  */
 class CloudFoundryReactiveDiscoveryClientConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(AutoConfigurations
-			.of(MockedCloudFoundryConfiguration.class, CloudFoundryReactiveDiscoveryClientConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(AutoConfigurations
+.of(MockedCloudFoundryConfiguration.class, CloudFoundryReactiveDiscoveryClientConfiguration.class));
 
 	@Test
 	public void shouldNotHaveDiscoveryClientsWhenDiscoveryDisabled() {
