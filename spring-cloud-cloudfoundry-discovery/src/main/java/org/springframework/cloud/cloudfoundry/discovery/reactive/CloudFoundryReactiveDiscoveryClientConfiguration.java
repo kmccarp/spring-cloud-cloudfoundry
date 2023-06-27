@@ -54,96 +54,96 @@ import org.springframework.context.annotation.Configuration;
 @AutoConfigureBefore(ReactiveCommonsClientAutoConfiguration.class)
 public class CloudFoundryReactiveDiscoveryClientConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(value = "spring.cloud.cloudfoundry.discovery.use-dns", havingValue = "false",
-			matchIfMissing = true)
-	public static class CloudFoundryNativeReactiveDiscoveryClientConfig {
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnProperty(value = "spring.cloud.cloudfoundry.discovery.use-dns", havingValue = "false",
+            matchIfMissing = true)
+    public static class CloudFoundryNativeReactiveDiscoveryClientConfig {
 
-		@Bean
-		@ConditionalOnMissingBean
-		public CloudFoundryNativeReactiveDiscoveryClient nativeCloudFoundryDiscoveryClient(CloudFoundryOperations cf,
-				CloudFoundryService svc, CloudFoundryDiscoveryProperties cloudFoundryDiscoveryProperties) {
-			return new CloudFoundryNativeReactiveDiscoveryClient(cf, svc, cloudFoundryDiscoveryProperties);
-		}
+        @Bean
+        @ConditionalOnMissingBean
+        public CloudFoundryNativeReactiveDiscoveryClient nativeCloudFoundryDiscoveryClient(CloudFoundryOperations cf,
+                                                                                                                                            CloudFoundryService svc, CloudFoundryDiscoveryProperties cloudFoundryDiscoveryProperties) {
+            return new CloudFoundryNativeReactiveDiscoveryClient(cf, svc, cloudFoundryDiscoveryProperties);
+        }
 
-		@Bean
-		@ConditionalOnClass(name = "org.springframework.boot.actuate.health.ReactiveHealthIndicator")
-		@ConditionalOnDiscoveryHealthIndicatorEnabled
-		public ReactiveDiscoveryClientHealthIndicator cloudFoundryReactiveDiscoveryClientHealthIndicator(
-				CloudFoundryNativeReactiveDiscoveryClient client, DiscoveryClientHealthIndicatorProperties properties) {
-			return new ReactiveDiscoveryClientHealthIndicator(client, properties);
-		}
+        @Bean
+        @ConditionalOnClass(name = "org.springframework.boot.actuate.health.ReactiveHealthIndicator")
+        @ConditionalOnDiscoveryHealthIndicatorEnabled
+        public ReactiveDiscoveryClientHealthIndicator cloudFoundryReactiveDiscoveryClientHealthIndicator(
+                CloudFoundryNativeReactiveDiscoveryClient client, DiscoveryClientHealthIndicatorProperties properties) {
+            return new ReactiveDiscoveryClientHealthIndicator(client, properties);
+        }
 
-		@Bean
-		public CloudFoundryReactiveHeartbeatSender cloudFoundryHeartbeatSender(
-				CloudFoundryNativeReactiveDiscoveryClient client) {
-			return new CloudFoundryReactiveHeartbeatSender(client);
-		}
+        @Bean
+        public CloudFoundryReactiveHeartbeatSender cloudFoundryHeartbeatSender(
+                CloudFoundryNativeReactiveDiscoveryClient client) {
+            return new CloudFoundryReactiveHeartbeatSender(client);
+        }
 
-	}
+    }
 
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(value = "spring.cloud.cloudfoundry.discovery.use-dns", havingValue = "true")
-	public static class DnsConfig {
+    @Configuration(proxyBeanMethods = false)
+    @ConditionalOnProperty(value = "spring.cloud.cloudfoundry.discovery.use-dns", havingValue = "true")
+    public static class DnsConfig {
 
-		@Configuration(proxyBeanMethods = false)
-		@ConditionalOnProperty(value = "spring.cloud.cloudfoundry.discovery.use-container-ip", havingValue = "true")
-		public static class SimpleDnsConfig {
+        @Configuration(proxyBeanMethods = false)
+        @ConditionalOnProperty(value = "spring.cloud.cloudfoundry.discovery.use-container-ip", havingValue = "true")
+        public static class SimpleDnsConfig {
 
-			@Bean
-			@ConditionalOnMissingBean
-			public SimpleDnsBasedReactiveDiscoveryClient dnsBasedReactiveDiscoveryClient(
-					ObjectProvider<ServiceIdToHostnameConverter> provider, CloudFoundryDiscoveryProperties properties) {
-				ServiceIdToHostnameConverter converter = provider.getIfAvailable();
-				return converter == null ? new SimpleDnsBasedReactiveDiscoveryClient(properties)
-						: new SimpleDnsBasedReactiveDiscoveryClient(converter);
-			}
+            @Bean
+            @ConditionalOnMissingBean
+            public SimpleDnsBasedReactiveDiscoveryClient dnsBasedReactiveDiscoveryClient(
+                    ObjectProvider<ServiceIdToHostnameConverter> provider, CloudFoundryDiscoveryProperties properties) {
+                ServiceIdToHostnameConverter converter = provider.getIfAvailable();
+                return converter == null ? new SimpleDnsBasedReactiveDiscoveryClient(properties)
+                        : new SimpleDnsBasedReactiveDiscoveryClient(converter);
+            }
 
-			@Bean
-			@ConditionalOnClass(name = "org.springframework.boot.actuate.health.ReactiveHealthIndicator")
-			@ConditionalOnDiscoveryHealthIndicatorEnabled
-			public ReactiveDiscoveryClientHealthIndicator cloudFoundryReactiveDiscoveryClientHealthIndicator(
-					SimpleDnsBasedReactiveDiscoveryClient client, DiscoveryClientHealthIndicatorProperties properties) {
-				return new ReactiveDiscoveryClientHealthIndicator(client, properties);
-			}
+            @Bean
+            @ConditionalOnClass(name = "org.springframework.boot.actuate.health.ReactiveHealthIndicator")
+            @ConditionalOnDiscoveryHealthIndicatorEnabled
+            public ReactiveDiscoveryClientHealthIndicator cloudFoundryReactiveDiscoveryClientHealthIndicator(
+                    SimpleDnsBasedReactiveDiscoveryClient client, DiscoveryClientHealthIndicatorProperties properties) {
+                return new ReactiveDiscoveryClientHealthIndicator(client, properties);
+            }
 
-			@Bean
-			public CloudFoundryReactiveHeartbeatSender cloudFoundryHeartbeatSender(
-					SimpleDnsBasedReactiveDiscoveryClient client) {
-				return new CloudFoundryReactiveHeartbeatSender(client);
-			}
+            @Bean
+            public CloudFoundryReactiveHeartbeatSender cloudFoundryHeartbeatSender(
+                    SimpleDnsBasedReactiveDiscoveryClient client) {
+                return new CloudFoundryReactiveHeartbeatSender(client);
+            }
 
-		}
+        }
 
-		@Configuration(proxyBeanMethods = false)
-		@ConditionalOnProperty(value = "spring.cloud.cloudfoundry.discovery.use-container-ip", havingValue = "false",
-				matchIfMissing = true)
-		public static class AppServiceConfig {
+        @Configuration(proxyBeanMethods = false)
+        @ConditionalOnProperty(value = "spring.cloud.cloudfoundry.discovery.use-container-ip", havingValue = "false",
+                matchIfMissing = true)
+        public static class AppServiceConfig {
 
-			@Bean
-			@ConditionalOnMissingBean
-			public CloudFoundryAppServiceReactiveDiscoveryClient appServiceReactiveDiscoveryClient(
-					CloudFoundryOperations cf, CloudFoundryService svc, CloudFoundryDiscoveryProperties properties) {
-				return new CloudFoundryAppServiceReactiveDiscoveryClient(cf, svc, properties);
-			}
+            @Bean
+            @ConditionalOnMissingBean
+            public CloudFoundryAppServiceReactiveDiscoveryClient appServiceReactiveDiscoveryClient(
+                    CloudFoundryOperations cf, CloudFoundryService svc, CloudFoundryDiscoveryProperties properties) {
+                return new CloudFoundryAppServiceReactiveDiscoveryClient(cf, svc, properties);
+            }
 
-			@Bean
-			@ConditionalOnClass(name = "org.springframework.boot.actuate.health.ReactiveHealthIndicator")
-			@ConditionalOnDiscoveryHealthIndicatorEnabled
-			public ReactiveDiscoveryClientHealthIndicator cloudFoundryReactiveDiscoveryClientHealthIndicator(
-					CloudFoundryAppServiceReactiveDiscoveryClient client,
-					DiscoveryClientHealthIndicatorProperties properties) {
-				return new ReactiveDiscoveryClientHealthIndicator(client, properties);
-			}
+            @Bean
+            @ConditionalOnClass(name = "org.springframework.boot.actuate.health.ReactiveHealthIndicator")
+            @ConditionalOnDiscoveryHealthIndicatorEnabled
+            public ReactiveDiscoveryClientHealthIndicator cloudFoundryReactiveDiscoveryClientHealthIndicator(
+                    CloudFoundryAppServiceReactiveDiscoveryClient client,
+                    DiscoveryClientHealthIndicatorProperties properties) {
+                return new ReactiveDiscoveryClientHealthIndicator(client, properties);
+            }
 
-			@Bean
-			public CloudFoundryReactiveHeartbeatSender cloudFoundryHeartbeatSender(
-					CloudFoundryAppServiceReactiveDiscoveryClient client) {
-				return new CloudFoundryReactiveHeartbeatSender(client);
-			}
+            @Bean
+            public CloudFoundryReactiveHeartbeatSender cloudFoundryHeartbeatSender(
+                    CloudFoundryAppServiceReactiveDiscoveryClient client) {
+                return new CloudFoundryReactiveHeartbeatSender(client);
+            }
 
-		}
+        }
 
-	}
+    }
 
 }

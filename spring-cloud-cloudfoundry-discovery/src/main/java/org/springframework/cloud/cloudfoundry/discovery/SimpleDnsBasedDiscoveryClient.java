@@ -40,56 +40,56 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
  */
 public class SimpleDnsBasedDiscoveryClient implements DiscoveryClient {
 
-	private static final Logger log = LoggerFactory.getLogger(SimpleDnsBasedDiscoveryClient.class);
+    private static final Logger log = LoggerFactory.getLogger(SimpleDnsBasedDiscoveryClient.class);
 
-	private final ServiceIdToHostnameConverter serviceIdToHostnameConverter;
+    private final ServiceIdToHostnameConverter serviceIdToHostnameConverter;
 
-	public SimpleDnsBasedDiscoveryClient(CloudFoundryDiscoveryProperties properties,
-			ServiceIdToHostnameConverter serviceIdToHostnameConverter) {
-		this.serviceIdToHostnameConverter = serviceIdToHostnameConverter;
-	}
+    public SimpleDnsBasedDiscoveryClient(CloudFoundryDiscoveryProperties properties,
+                                          ServiceIdToHostnameConverter serviceIdToHostnameConverter) {
+        this.serviceIdToHostnameConverter = serviceIdToHostnameConverter;
+    }
 
-	public SimpleDnsBasedDiscoveryClient(CloudFoundryDiscoveryProperties properties) {
-		this(properties, serviceId -> serviceId + "." + properties.getInternalDomain());
-	}
+    public SimpleDnsBasedDiscoveryClient(CloudFoundryDiscoveryProperties properties) {
+        this(properties, serviceId -> serviceId + "." + properties.getInternalDomain());
+    }
 
-	@Override
-	public String description() {
-		return "DNS Based CF Service Discovery Client";
-	}
+    @Override
+    public String description() {
+        return "DNS Based CF Service Discovery Client";
+    }
 
-	@Override
-	public List<ServiceInstance> getInstances(String serviceId) {
-		String hostname = this.serviceIdToHostnameConverter.toHostname(serviceId);
-		try {
-			List<ServiceInstance> serviceInstances = new ArrayList<>();
-			InetAddress[] addresses = InetAddress.getAllByName(hostname);
-			if (addresses != null) {
-				for (InetAddress address : addresses) {
-					DefaultServiceInstance serviceInstance = new DefaultServiceInstance(null, serviceId,
-							address.getHostAddress(), 8080, false);
-					serviceInstances.add(serviceInstance);
-				}
-			}
-			return serviceInstances;
-		}
-		catch (UnknownHostException e) {
-			log.warn("{}", e.getMessage());
-			return Collections.emptyList();
-		}
-	}
+    @Override
+    public List<ServiceInstance> getInstances(String serviceId) {
+        String hostname = this.serviceIdToHostnameConverter.toHostname(serviceId);
+        try {
+            List<ServiceInstance> serviceInstances = new ArrayList<>();
+            InetAddress[] addresses = InetAddress.getAllByName(hostname);
+            if (addresses != null) {
+                for (InetAddress address : addresses) {
+                    DefaultServiceInstance serviceInstance = new DefaultServiceInstance(null, serviceId,
+                            address.getHostAddress(), 8080, false);
+                    serviceInstances.add(serviceInstance);
+                }
+            }
+            return serviceInstances;
+        }
+        catch (UnknownHostException e) {
+            log.warn("{}", e.getMessage());
+            return Collections.emptyList();
+        }
+    }
 
-	@Override
-	public List<String> getServices() {
-		log.warn("getServices is not supported");
-		return Collections.emptyList();
-	}
+    @Override
+    public List<String> getServices() {
+        log.warn("getServices is not supported");
+        return Collections.emptyList();
+    }
 
-	@FunctionalInterface
-	public interface ServiceIdToHostnameConverter {
+    @FunctionalInterface
+    public interface ServiceIdToHostnameConverter {
 
-		String toHostname(String serviceId);
+        String toHostname(String serviceId);
 
-	}
+    }
 
 }

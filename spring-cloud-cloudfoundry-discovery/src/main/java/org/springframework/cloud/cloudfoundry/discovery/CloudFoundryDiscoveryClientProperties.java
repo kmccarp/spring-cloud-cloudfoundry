@@ -28,14 +28,14 @@ import org.springframework.core.Ordered;
 @ConfigurationProperties("spring.cloud.discovery.client.cloudfoundry")
 public class CloudFoundryDiscoveryClientProperties {
 
-	private int order = Ordered.LOWEST_PRECEDENCE;
+    private int order = Ordered.LOWEST_PRECEDENCE;
 
-	public int getOrder() {
-		return this.order;
-	}
+    public int getOrder() {
+        return this.order;
+    }
 
-	public void setOrder(int order) {
-		this.order = order;
-	}
+    public void setOrder(int order) {
+        this.order = order;
+    }
 
 }

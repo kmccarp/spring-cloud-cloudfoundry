@@ -39,56 +39,56 @@ import org.springframework.cloud.cloudfoundry.discovery.CloudFoundryDiscoveryPro
  */
 public class CloudFoundryNativeReactiveDiscoveryClient implements ReactiveDiscoveryClient {
 
-	private final CloudFoundryService cloudFoundryService;
+    private final CloudFoundryService cloudFoundryService;
 
-	private final CloudFoundryOperations cloudFoundryOperations;
+    private final CloudFoundryOperations cloudFoundryOperations;
 
-	private final CloudFoundryDiscoveryProperties properties;
+    private final CloudFoundryDiscoveryProperties properties;
 
-	CloudFoundryNativeReactiveDiscoveryClient(CloudFoundryOperations operations, CloudFoundryService svc,
-			CloudFoundryDiscoveryProperties properties) {
-		this.cloudFoundryService = svc;
-		this.cloudFoundryOperations = operations;
-		this.properties = properties;
-	}
+    CloudFoundryNativeReactiveDiscoveryClient(CloudFoundryOperations operations, CloudFoundryService svc,
+                                               CloudFoundryDiscoveryProperties properties) {
+        this.cloudFoundryService = svc;
+        this.cloudFoundryOperations = operations;
+        this.properties = properties;
+    }
 
-	@Override
-	public String description() {
-		return "CF Reactive Service Discovery Client";
-	}
+    @Override
+    public String description() {
+        return "CF Reactive Service Discovery Client";
+    }
 
-	@Override
-	public Flux<ServiceInstance> getInstances(String serviceId) {
-		return this.cloudFoundryService.getApplicationInstances(serviceId)
-				.map(this::mapApplicationInstanceToServiceInstance);
-	}
+    @Override
+    public Flux<ServiceInstance> getInstances(String serviceId) {
+        return this.cloudFoundryService.getApplicationInstances(serviceId)
+                .map(this::mapApplicationInstanceToServiceInstance);
+    }
 
-	@Override
-	public Flux<String> getServices() {
-		return this.cloudFoundryOperations.applications().list().map(ApplicationSummary::getName);
-	}
+    @Override
+    public Flux<String> getServices() {
+        return this.cloudFoundryOperations.applications().list().map(ApplicationSummary::getName);
+    }
 
-	@Override
-	public int getOrder() {
-		return this.properties.getOrder();
-	}
+    @Override
+    public int getOrder() {
+        return this.properties.getOrder();
+    }
 
-	protected ServiceInstance mapApplicationInstanceToServiceInstance(Tuple2<ApplicationDetail, InstanceDetail> tuple) {
-		ApplicationDetail applicationDetail = tuple.getT1();
-		InstanceDetail instanceDetail = tuple.getT2();
+    protected ServiceInstance mapApplicationInstanceToServiceInstance(Tuple2<ApplicationDetail, InstanceDetail> tuple) {
+        ApplicationDetail applicationDetail = tuple.getT1();
+        InstanceDetail instanceDetail = tuple.getT2();
 
-		String applicationId = applicationDetail.getId();
-		String applicationIndex = instanceDetail.getIndex();
-		String instanceId = applicationId + "." + applicationIndex;
-		String name = applicationDetail.getName();
-		String url = applicationDetail.getUrls().size() > 0 ? applicationDetail.getUrls().get(0) : null;
-		boolean secure = (url + "").toLowerCase().startsWith("https");
+        String applicationId = applicationDetail.getId();
+        String applicationIndex = instanceDetail.getIndex();
+        String instanceId = applicationId + "." + applicationIndex;
+        String name = applicationDetail.getName();
+        String url = applicationDetail.getUrls().size() > 0 ? applicationDetail.getUrls().get(0) : null;
+        boolean secure = (url + "").toLowerCase().startsWith("https");
 
-		HashMap<String, String> metadata = new HashMap<>();
-		metadata.put("applicationId", applicationId);
-		metadata.put("instanceId", applicationIndex);
+        HashMap<String, String> metadata = new HashMap<>();
+        metadata.put("applicationId", applicationId);
+        metadata.put("instanceId", applicationIndex);
 
-		return new DefaultServiceInstance(instanceId, name, url, secure ? 443 : 80, secure, metadata);
-	}
+        return new DefaultServiceInstance(instanceId, name, url, secure ? 443 : 80, secure, metadata);
+    }
 
 }

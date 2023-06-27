@@ -42,52 +42,52 @@ import org.springframework.cloud.cloudfoundry.discovery.CloudFoundryDiscoveryPro
  */
 public class SimpleDnsBasedReactiveDiscoveryClient implements ReactiveDiscoveryClient {
 
-	private static final Logger log = LoggerFactory.getLogger(SimpleDnsBasedReactiveDiscoveryClient.class);
+    private static final Logger log = LoggerFactory.getLogger(SimpleDnsBasedReactiveDiscoveryClient.class);
 
-	private final ServiceIdToHostnameConverter serviceIdToHostnameConverter;
+    private final ServiceIdToHostnameConverter serviceIdToHostnameConverter;
 
-	public SimpleDnsBasedReactiveDiscoveryClient(ServiceIdToHostnameConverter serviceIdToHostnameConverter) {
-		this.serviceIdToHostnameConverter = serviceIdToHostnameConverter;
-	}
+    public SimpleDnsBasedReactiveDiscoveryClient(ServiceIdToHostnameConverter serviceIdToHostnameConverter) {
+        this.serviceIdToHostnameConverter = serviceIdToHostnameConverter;
+    }
 
-	public SimpleDnsBasedReactiveDiscoveryClient(CloudFoundryDiscoveryProperties properties) {
-		this(serviceId -> serviceId + "." + properties.getInternalDomain());
-	}
+    public SimpleDnsBasedReactiveDiscoveryClient(CloudFoundryDiscoveryProperties properties) {
+        this(serviceId -> serviceId + "." + properties.getInternalDomain());
+    }
 
-	@Override
-	public String description() {
-		return "DNS Based CF Service Reactive Discovery Client";
-	}
+    @Override
+    public String description() {
+        return "DNS Based CF Service Reactive Discovery Client";
+    }
 
-	@Override
-	public Flux<ServiceInstance> getInstances(String serviceId) {
-		return Mono.justOrEmpty(serviceIdToHostnameConverter.toHostname(serviceId)).flatMapMany(getInetAddresses())
-				.map(address -> new DefaultServiceInstance(null, serviceId, address.getHostAddress(), 8080, false));
-	}
+    @Override
+    public Flux<ServiceInstance> getInstances(String serviceId) {
+        return Mono.justOrEmpty(serviceIdToHostnameConverter.toHostname(serviceId)).flatMapMany(getInetAddresses())
+                .map(address -> new DefaultServiceInstance(null, serviceId, address.getHostAddress(), 8080, false));
+    }
 
-	private Function<String, Publisher<? extends InetAddress>> getInetAddresses() {
-		return hostname -> {
-			try {
-				return Flux.fromArray(InetAddress.getAllByName(hostname));
-			}
-			catch (UnknownHostException e) {
-				log.warn("{}", e.getMessage());
-				return Flux.empty();
-			}
-		};
-	}
+    private Function<String, Publisher<? extends InetAddress>> getInetAddresses() {
+        return hostname -> {
+            try {
+                return Flux.fromArray(InetAddress.getAllByName(hostname));
+            }
+            catch (UnknownHostException e) {
+                log.warn("{}", e.getMessage());
+                return Flux.empty();
+            }
+        };
+    }
 
-	@Override
-	public Flux<String> getServices() {
-		log.warn("getServices is not supported");
-		return Flux.empty();
-	}
+    @Override
+    public Flux<String> getServices() {
+        log.warn("getServices is not supported");
+        return Flux.empty();
+    }
 
-	@FunctionalInterface
-	public interface ServiceIdToHostnameConverter {
+    @FunctionalInterface
+    public interface ServiceIdToHostnameConverter {
 
-		String toHostname(String serviceId);
+        String toHostname(String serviceId);
 
-	}
+    }
 
 }

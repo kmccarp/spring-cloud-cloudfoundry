@@ -36,68 +36,68 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class CloudFoundryDiscoveryClientConfigurationTest {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(CloudFoundryDiscoveryClientConfiguration.class));
+    private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+            .withConfiguration(AutoConfigurations.of(CloudFoundryDiscoveryClientConfiguration.class));
 
-	@Test
-	public void testDefault() {
-		this.contextRunner.withUserConfiguration(CloudFoundryConfig.class).run((context) -> {
-			DiscoveryClient discoveryClient = context.getBean(DiscoveryClient.class);
-			assertThat(discoveryClient.getClass()).isEqualTo(CloudFoundryDiscoveryClient.class);
-		});
-	}
+    @Test
+    public void testDefault() {
+        this.contextRunner.withUserConfiguration(CloudFoundryConfig.class).run((context) -> {
+            DiscoveryClient discoveryClient = context.getBean(DiscoveryClient.class);
+            assertThat(discoveryClient.getClass()).isEqualTo(CloudFoundryDiscoveryClient.class);
+        });
+    }
 
-	@Test
-	public void testUseDnsTrue() {
-		this.contextRunner.withUserConfiguration(CloudFoundryConfig.class)
-				.withPropertyValues("spring.cloud.cloudfoundry.discovery.use-dns=true").run((context) -> {
-					DiscoveryClient discoveryClient = context.getBean(DiscoveryClient.class);
-					assertThat(discoveryClient.getClass()).isEqualTo(CloudFoundryAppServiceDiscoveryClient.class);
-				});
-	}
+    @Test
+    public void testUseDnsTrue() {
+        this.contextRunner.withUserConfiguration(CloudFoundryConfig.class)
+                .withPropertyValues("spring.cloud.cloudfoundry.discovery.use-dns=true").run((context) -> {
+            DiscoveryClient discoveryClient = context.getBean(DiscoveryClient.class);
+            assertThat(discoveryClient.getClass()).isEqualTo(CloudFoundryAppServiceDiscoveryClient.class);
+        });
+    }
 
-	@Test
-	public void testUseDnsFalse() {
-		this.contextRunner.withUserConfiguration(CloudFoundryConfig.class)
-				.withPropertyValues("spring.cloud.cloudfoundry.discovery.use-dns=false").run((context) -> {
-					DiscoveryClient discoveryClient = context.getBean(DiscoveryClient.class);
-					assertThat(discoveryClient.getClass()).isEqualTo(CloudFoundryDiscoveryClient.class);
-				});
-	}
+    @Test
+    public void testUseDnsFalse() {
+        this.contextRunner.withUserConfiguration(CloudFoundryConfig.class)
+                .withPropertyValues("spring.cloud.cloudfoundry.discovery.use-dns=false").run((context) -> {
+            DiscoveryClient discoveryClient = context.getBean(DiscoveryClient.class);
+            assertThat(discoveryClient.getClass()).isEqualTo(CloudFoundryDiscoveryClient.class);
+        });
+    }
 
-	@Test
-	public void testUseContainerIpFalse() {
-		this.contextRunner.withUserConfiguration(CloudFoundryConfig.class)
-				.withPropertyValues("spring.cloud.cloudfoundry.discovery.use-dns=true",
-						"spring.cloud.cloudfoundry.discovery.use-container-ip=false")
-				.run((context) -> {
-					DiscoveryClient discoveryClient = context.getBean(DiscoveryClient.class);
-					assertThat(discoveryClient.getClass()).isEqualTo(CloudFoundryAppServiceDiscoveryClient.class);
-				});
-	}
+    @Test
+    public void testUseContainerIpFalse() {
+        this.contextRunner.withUserConfiguration(CloudFoundryConfig.class)
+                .withPropertyValues("spring.cloud.cloudfoundry.discovery.use-dns=true",
+                        "spring.cloud.cloudfoundry.discovery.use-container-ip=false")
+                .run((context) -> {
+                    DiscoveryClient discoveryClient = context.getBean(DiscoveryClient.class);
+                    assertThat(discoveryClient.getClass()).isEqualTo(CloudFoundryAppServiceDiscoveryClient.class);
+                });
+    }
 
-	@Test
-	public void testUseContainerIpTrue() {
-		this.contextRunner.withPropertyValues("spring.cloud.cloudfoundry.discovery.use-dns=true",
-				"spring.cloud.cloudfoundry.discovery.use-container-ip=true").run((context) -> {
-					DiscoveryClient discoveryClient = context.getBean(DiscoveryClient.class);
-					assertThat(discoveryClient.getClass()).isEqualTo(SimpleDnsBasedDiscoveryClient.class);
-				});
-	}
+    @Test
+    public void testUseContainerIpTrue() {
+        this.contextRunner.withPropertyValues("spring.cloud.cloudfoundry.discovery.use-dns=true",
+                "spring.cloud.cloudfoundry.discovery.use-container-ip=true").run((context) -> {
+            DiscoveryClient discoveryClient = context.getBean(DiscoveryClient.class);
+            assertThat(discoveryClient.getClass()).isEqualTo(SimpleDnsBasedDiscoveryClient.class);
+        });
+    }
 
-	@Configuration(proxyBeanMethods = false)
-	public static class CloudFoundryConfig {
+    @Configuration(proxyBeanMethods = false)
+    public static class CloudFoundryConfig {
 
-		@Bean
-		public CloudFoundryOperations cloudFoundryOperations() {
-			return Mockito.mock(CloudFoundryOperations.class);
-		}
+        @Bean
+        public CloudFoundryOperations cloudFoundryOperations() {
+            return Mockito.mock(CloudFoundryOperations.class);
+        }
 
-		@Bean
-		public CloudFoundryService cloudFoundryService() {
-			return Mockito.mock(CloudFoundryService.class);
-		}
+        @Bean
+        public CloudFoundryService cloudFoundryService() {
+            return Mockito.mock(CloudFoundryService.class);
+        }
 
-	}
+    }
 
 }

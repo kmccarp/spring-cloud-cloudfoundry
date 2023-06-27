@@ -41,27 +41,27 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class CloudFoundryAppServiceReactiveDiscoveryClientTests {
 
-	@Mock
-	private CloudFoundryService svc;
+    @Mock
+    private CloudFoundryService svc;
 
-	@InjectMocks
-	private CloudFoundryAppServiceReactiveDiscoveryClient client;
+    @InjectMocks
+    private CloudFoundryAppServiceReactiveDiscoveryClient client;
 
-	@Test
-	public void shouldReturnFluxOfServiceInstances() {
-		ApplicationDetail appDetail1 = ApplicationDetail.builder().id(UUID.randomUUID().toString()).stack("stack")
-				.instances(1).memoryLimit(1024).requestedState("requestedState").diskQuota(1024).name("service")
-				.runningInstances(1).url("instance.apps.internal").build();
-		Tuple2<ApplicationDetail, InstanceDetail> instance1 = Tuples.of(appDetail1,
-				InstanceDetail.builder().index("0").build());
-		ApplicationDetail appDetail2 = ApplicationDetail.builder().id(UUID.randomUUID().toString()).stack("stack")
-				.instances(1).memoryLimit(1024).requestedState("requestedState").diskQuota(1024).name("service")
-				.runningInstances(1).url("instance.apps.not.internal").build();
-		Tuple2<ApplicationDetail, InstanceDetail> instance2 = Tuples.of(appDetail2,
-				InstanceDetail.builder().index("0").build());
-		when(this.svc.getApplicationInstances("service")).thenReturn(Flux.just(instance1, instance2));
-		Flux<ServiceInstance> instances = this.client.getInstances("service");
-		StepVerifier.create(instances).expectNextCount(1).expectComplete().verify();
-	}
+    @Test
+    public void shouldReturnFluxOfServiceInstances() {
+        ApplicationDetail appDetail1 = ApplicationDetail.builder().id(UUID.randomUUID().toString()).stack("stack")
+                .instances(1).memoryLimit(1024).requestedState("requestedState").diskQuota(1024).name("service")
+                .runningInstances(1).url("instance.apps.internal").build();
+        Tuple2<ApplicationDetail, InstanceDetail> instance1 = Tuples.of(appDetail1,
+                InstanceDetail.builder().index("0").build());
+        ApplicationDetail appDetail2 = ApplicationDetail.builder().id(UUID.randomUUID().toString()).stack("stack")
+                .instances(1).memoryLimit(1024).requestedState("requestedState").diskQuota(1024).name("service")
+                .runningInstances(1).url("instance.apps.not.internal").build();
+        Tuple2<ApplicationDetail, InstanceDetail> instance2 = Tuples.of(appDetail2,
+                InstanceDetail.builder().index("0").build());
+        when(this.svc.getApplicationInstances("service")).thenReturn(Flux.just(instance1, instance2));
+        Flux<ServiceInstance> instances = this.client.getInstances("service");
+        StepVerifier.create(instances).expectNextCount(1).expectComplete().verify();
+    }
 
 }

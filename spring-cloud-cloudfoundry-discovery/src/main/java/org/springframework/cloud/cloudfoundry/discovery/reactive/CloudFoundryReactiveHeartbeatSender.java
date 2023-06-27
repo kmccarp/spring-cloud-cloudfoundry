@@ -32,24 +32,24 @@ import org.springframework.stereotype.Component;
 @Component
 public class CloudFoundryReactiveHeartbeatSender implements ApplicationEventPublisherAware {
 
-	private final ReactiveDiscoveryClient client;
+    private final ReactiveDiscoveryClient client;
 
-	private ApplicationEventPublisher publisher;
+    private ApplicationEventPublisher publisher;
 
-	public CloudFoundryReactiveHeartbeatSender(ReactiveDiscoveryClient client) {
-		this.client = client;
-	}
+    public CloudFoundryReactiveHeartbeatSender(ReactiveDiscoveryClient client) {
+        this.client = client;
+    }
 
-	@Scheduled(fixedDelayString = "${spring.cloud.cloudfoundry.discovery.heartbeatFrequency:5000}")
-	public void poll() {
-		if (this.publisher != null) {
-			this.publisher.publishEvent(new HeartbeatEvent(this.client, this.client.getServices()));
-		}
-	}
+    @Scheduled(fixedDelayString = "${spring.cloud.cloudfoundry.discovery.heartbeatFrequency:5000}")
+    public void poll() {
+        if (this.publisher != null) {
+            this.publisher.publishEvent(new HeartbeatEvent(this.client, this.client.getServices()));
+        }
+    }
 
-	@Override
-	public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
-		this.publisher = publisher;
-	}
+    @Override
+    public void setApplicationEventPublisher(ApplicationEventPublisher publisher) {
+        this.publisher = publisher;
+    }
 
 }

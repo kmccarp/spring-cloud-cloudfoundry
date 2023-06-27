@@ -44,49 +44,49 @@ import static org.mockito.Mockito.mock;
  */
 public class CloudFoundryDiscoveryClientTest {
 
-	private final Log log = LogFactory.getLog(getClass());
+    private final Log log = LogFactory.getLog(getClass());
 
-	private CloudFoundryDiscoveryClient cloudFoundryDiscoveryClient;
+    private CloudFoundryDiscoveryClient cloudFoundryDiscoveryClient;
 
-	private String hiServiceServiceId = "hi-service";
+    private String hiServiceServiceId = "hi-service";
 
-	private CloudFoundryOperations ops;
+    private CloudFoundryOperations ops;
 
-	private CloudFoundryService svc;
+    private CloudFoundryService svc;
 
-	@Before
-	public void setUp() {
-		this.ops = mock(CloudFoundryOperations.class);
-		this.svc = mock(CloudFoundryService.class);
-		this.cloudFoundryDiscoveryClient = new CloudFoundryDiscoveryClient(this.ops, this.svc,
-				new CloudFoundryDiscoveryProperties());
-	}
+    @Before
+    public void setUp() {
+        this.ops = mock(CloudFoundryOperations.class);
+        this.svc = mock(CloudFoundryService.class);
+        this.cloudFoundryDiscoveryClient = new CloudFoundryDiscoveryClient(this.ops, this.svc,
+                new CloudFoundryDiscoveryProperties());
+    }
 
-	@Test
-	public void testServiceResolution() {
-		Applications apps = mock(Applications.class);
-		ApplicationSummary s = ApplicationSummary.builder().id(UUID.randomUUID().toString()).instances(2)
-				.memoryLimit(1024).requestedState("requestedState").diskQuota(1024).name(this.hiServiceServiceId)
-				.runningInstances(2).build();
-		Mockito.when(apps.list()).thenReturn(Flux.just(s));
-		Mockito.when(this.ops.applications()).thenReturn(apps);
-		List<String> serviceNames = this.cloudFoundryDiscoveryClient.getServices();
-		assertThat(serviceNames.contains(this.hiServiceServiceId)).as("there should be one registered service.")
-				.isTrue();
-		serviceNames.forEach(serviceName -> this.log.debug("\t discovered serviceName: " + serviceName));
-	}
+    @Test
+    public void testServiceResolution() {
+        Applications apps = mock(Applications.class);
+        ApplicationSummary s = ApplicationSummary.builder().id(UUID.randomUUID().toString()).instances(2)
+                .memoryLimit(1024).requestedState("requestedState").diskQuota(1024).name(this.hiServiceServiceId)
+                .runningInstances(2).build();
+        Mockito.when(apps.list()).thenReturn(Flux.just(s));
+        Mockito.when(this.ops.applications()).thenReturn(apps);
+        List<String> serviceNames = this.cloudFoundryDiscoveryClient.getServices();
+        assertThat(serviceNames.contains(this.hiServiceServiceId)).as("there should be one registered service.")
+                .isTrue();
+        serviceNames.forEach(serviceName -> this.log.debug("\t discovered serviceName: " + serviceName));
+    }
 
-	@Test
-	public void testInstances() {
-		ApplicationDetail applicationDetail = ApplicationDetail.builder().instances(2).name("my-app").stack("stack")
-				.memoryLimit(1024).id("id").requestedState("requestedState").runningInstances(2)
-				.url("http://my-app-cfapps-io").diskQuota(20).build();
-		InstanceDetail instanceDetail = InstanceDetail.builder().index("0").build();
-		Tuple2<ApplicationDetail, InstanceDetail> tuple2 = Tuples.of(applicationDetail, instanceDetail);
-		Mockito.when(this.svc.getApplicationInstances(this.hiServiceServiceId)).thenReturn(Flux.just(tuple2));
-		List<ServiceInstance> instances = this.cloudFoundryDiscoveryClient.getInstances(this.hiServiceServiceId);
-		assertThat(instances.size()).as("Wrong instances: " + instances).isEqualTo(1);
-		assertThat(instances.get(0).getInstanceId()).as("Wrong instance ID").isEqualTo("id.0");
-	}
+    @Test
+    public void testInstances() {
+        ApplicationDetail applicationDetail = ApplicationDetail.builder().instances(2).name("my-app").stack("stack")
+                .memoryLimit(1024).id("id").requestedState("requestedState").runningInstances(2)
+                .url("http://my-app-cfapps-io").diskQuota(20).build();
+        InstanceDetail instanceDetail = InstanceDetail.builder().index("0").build();
+        Tuple2<ApplicationDetail, InstanceDetail> tuple2 = Tuples.of(applicationDetail, instanceDetail);
+        Mockito.when(this.svc.getApplicationInstances(this.hiServiceServiceId)).thenReturn(Flux.just(tuple2));
+        List<ServiceInstance> instances = this.cloudFoundryDiscoveryClient.getInstances(this.hiServiceServiceId);
+        assertThat(instances.size()).as("Wrong instances: " + instances).isEqualTo(1);
+        assertThat(instances.get(0).getInstanceId()).as("Wrong instance ID").isEqualTo("id.0");
+    }
 
 }

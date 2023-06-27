@@ -36,30 +36,30 @@ import org.springframework.cloud.cloudfoundry.discovery.CloudFoundryDiscoveryPro
  */
 public class CloudFoundryAppServiceReactiveDiscoveryClient extends CloudFoundryNativeReactiveDiscoveryClient {
 
-	private static final String INTERNAL_DOMAIN = "apps.internal";
+    private static final String INTERNAL_DOMAIN = "apps.internal";
 
-	private final CloudFoundryService cloudFoundryService;
+    private final CloudFoundryService cloudFoundryService;
 
-	CloudFoundryAppServiceReactiveDiscoveryClient(CloudFoundryOperations cloudFoundryOperations,
-			CloudFoundryService svc, CloudFoundryDiscoveryProperties cloudFoundryDiscoveryProperties) {
-		super(cloudFoundryOperations, svc, cloudFoundryDiscoveryProperties);
-		this.cloudFoundryService = svc;
-	}
+    CloudFoundryAppServiceReactiveDiscoveryClient(CloudFoundryOperations cloudFoundryOperations,
+                                                   CloudFoundryService svc, CloudFoundryDiscoveryProperties cloudFoundryDiscoveryProperties) {
+        super(cloudFoundryOperations, svc, cloudFoundryDiscoveryProperties);
+        this.cloudFoundryService = svc;
+    }
 
-	@Override
-	public String description() {
-		return "CF App Reactive Service Discovery Client";
-	}
+    @Override
+    public String description() {
+        return "CF App Reactive Service Discovery Client";
+    }
 
-	@Override
-	public Flux<ServiceInstance> getInstances(String serviceId) {
-		return cloudFoundryService.getApplicationInstances(serviceId)
-				.filter(tuple -> tuple.getT1().getUrls().stream().anyMatch(this::isInternalDomain))
-				.map(this::mapApplicationInstanceToServiceInstance);
-	}
+    @Override
+    public Flux<ServiceInstance> getInstances(String serviceId) {
+        return cloudFoundryService.getApplicationInstances(serviceId)
+                .filter(tuple -> tuple.getT1().getUrls().stream().anyMatch(this::isInternalDomain))
+                .map(this::mapApplicationInstanceToServiceInstance);
+    }
 
-	private boolean isInternalDomain(String url) {
-		return url != null && url.endsWith(INTERNAL_DOMAIN);
-	}
+    private boolean isInternalDomain(String url) {
+        return url != null && url.endsWith(INTERNAL_DOMAIN);
+    }
 
 }
